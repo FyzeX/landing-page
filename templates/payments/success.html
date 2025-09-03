@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Successful - Telegram Market Bot{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body text-center p-5">
+                    <!-- Success Icon -->
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+                        <h2 class="text-success">Payment Successful!</h2>
+                        <p class="lead text-muted">Your order has been processed successfully</p>
+                    </div>
+                    
+                    {% if order %}
+                    <!-- Order Information -->
+                    <div class="bg-light rounded p-4 mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                {% if order.template.thumbnail %}
+                                <img src="{{ order.template.thumbnail.url }}" 
+                                     class="img-fluid rounded" 
+                                     alt="{{ order.template.title }}"
+                                     style="max-height: 100px;">
+                                {% else %}
+                                <div class="bg-white rounded d-flex align-items-center justify-content-center" 
+                                     style="height: 100px;">
+                                    <i class="fas fa-robot fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9 text-start">
+                                <h4 class="mb-2">{{ order.template.title }}</h4>
+                                <p class="text-muted mb-1">{{ order.template.category.name }}</p>
+                                <p class="mb-1"><strong>Order ID:</strong> <code>{{ order.id }}</code></p>
+                                <p class="mb-1"><strong>Amount Paid:</strong> <span class="text-success">${{ order.amount }}</span></p>
+                                <p class="mb-0"><strong>Date:</strong> {{ order.completed_at|date:"M d, Y H:i" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Download Section -->
+                    {% if order.can_download %}
+                    <div class="mb-4">
+                        <h5 class="mb-3">Your template is ready for download!</h5>
+                        <a href="{% url 'orders:download' order.download_token %}" 
+                           class="btn btn-success btn-lg me-3">
+                            <i class="fas fa-download me-2"></i>Download Template
+                        </a>
+                        <p class="small text-muted mt-2">
+                            Downloads remaining: {{ order.max_downloads|add:order.download_count|add:"-"|add:order.download_count }}
+                        </p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-center gap-3 mb-4">
+                        <a href="{% url 'users:dashboard' %}" class="btn btn-primary">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                        <a href="{% url 'orders:detail' order.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-receipt me-2"></i>View Order Details
+                        </a>
+                        <a href="{% url 'templates:list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-search me-2"></i>Browse More Templates
+                        </a>
+                    </div>
+                    
+                    <!-- What's Next -->
+                    <div class="text-start">
+                        <h6>What's Next?</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Download your template files using the button above
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Follow the included setup instructions
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Customize the bot to match your needs
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Deploy your bot and start serving users
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Support Information -->
+                    <div class="border-top pt-4 mt-4">
+                        <h6>Need Help?</h6>
+                        <p class="text-muted mb-3">
+                            If you need assistance with setup or have any questions, our support team is here to help.
+                        </p>
+                        <a href="{% url 'core:contact' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-headset me-2"></i>Contact Support
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

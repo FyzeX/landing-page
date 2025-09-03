@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Cancelled - Telegram Market Bot{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body text-center p-5">
+                    <!-- Cancel Icon -->
+                    <div class="mb-4">
+                        <i class="fas fa-times-circle fa-5x text-warning mb-3"></i>
+                        <h2 class="text-warning">Payment Cancelled</h2>
+                        <p class="lead text-muted">Your payment was cancelled or could not be processed</p>
+                    </div>
+                    
+                    {% if order %}
+                    <!-- Order Information -->
+                    <div class="bg-light rounded p-4 mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                {% if order.template.thumbnail %}
+                                <img src="{{ order.template.thumbnail.url }}" 
+                                     class="img-fluid rounded" 
+                                     alt="{{ order.template.title }}"
+                                     style="max-height: 100px;">
+                                {% else %}
+                                <div class="bg-white rounded d-flex align-items-center justify-content-center" 
+                                     style="height: 100px;">
+                                    <i class="fas fa-robot fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9 text-start">
+                                <h4 class="mb-2">{{ order.template.title }}</h4>
+                                <p class="text-muted mb-1">{{ order.template.category.name }}</p>
+                                <p class="mb-1"><strong>Order ID:</strong> <code>{{ order.id }}</code></p>
+                                <p class="mb-1"><strong>Amount:</strong> ${{ order.amount }}</p>
+                                <p class="mb-0"><strong>Status:</strong> 
+                                    <span class="order-status {{ order.status }}">{{ order.get_status_display }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reason for Cancellation -->
+                    <div class="text-start mb-4">
+                        <h6>Common reasons for payment cancellation:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-info-circle text-info me-2"></i>
+                                You chose to cancel the payment process
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-info-circle text-info me-2"></i>
+                                Payment timeout (session expired)
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-info-circle text-info me-2"></i>
+                                Insufficient funds or payment method issues
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-info-circle text-info me-2"></i>
+                                Technical issues with the payment provider
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-center gap-3 mb-4">
+                        <a href="{% url 'payments:process' %}?order_id={{ order.id }}" class="btn btn-primary">
+                            <i class="fas fa-credit-card me-2"></i>Try Payment Again
+                        </a>
+                        <a href="{{ order.template.get_absolute_url }}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Template
+                        </a>
+                        <a href="{% url 'templates:list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-search me-2"></i>Browse Templates
+                        </a>
+                    </div>
+                    {% else %}
+                    <!-- No Order Information -->
+                    <div class="mb-4">
+                        <p class="text-muted">No order information available.</p>
+                        <a href="{% url 'templates:list' %}" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Browse Templates
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Support Information -->
+                    <div class="border-top pt-4 mt-4">
+                        <h6>Need Help?</h6>
+                        <p class="text-muted mb-3">
+                            If you're experiencing technical difficulties or need assistance with payment, 
+                            please don't hesitate to contact our support team.
+                        </p>
+                        <a href="{% url 'core:contact' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-headset me-2"></i>Contact Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

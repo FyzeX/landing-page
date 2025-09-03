@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ template.title }} - Telegram Market Bot{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Template Information -->
+        <div class="col-lg-8">
+            <!-- Template Header -->
+            <div class="mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'templates:list' %}">Templates</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'templates:category' template.category.slug %}">{{ template.category.name }}</a></li>
+                        <li class="breadcrumb-item active">{{ template.title }}</li>
+                    </ol>
+                </nav>
+                
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h1 class="h2 mb-2">{{ template.title }}</h1>
+                        <p class="lead text-muted">{{ template.short_description }}</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge-category mb-2 d-block">{{ template.category.name }}</span>
+                        <div class="template-price h3 mb-0">${{ template.price }}</div>
+                    </div>
+                </div>
+                
+                <!-- Template Stats -->
+                <div class="d-flex gap-4 mb-3">
+                    {% if template.review_count > 0 %}
+                    <div class="d-flex align-items-center">
+                        <div class="template-rating me-2">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= template.average_rating %}
+                                <i class="fas fa-star"></i>
+                                {% else %}
+                                <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-muted">{{ template.average_rating|floatformat:1 }} ({{ template.review_count }} review{{ template.review_count|pluralize }})</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="text-muted">
+                        <i class="fas fa-download me-1"></i>
+                        {{ template.download_count }} download{{ template.download_count|pluralize }}
+                    </div>
+                    
+                    <div class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        Updated {{ template.updated_at|date:"M d, Y" }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template Image -->
+            {% if template.thumbnail %}
+            <div class="mb-4">
+                <img src="{{ template.thumbnail.url }}" 
+                     class="img-fluid template-detail-img w-100" 
+                     alt="{{ template.title }}"
+                     style="max-height: 400px; object-fit: cover;">
+            </div>
+            {% endif %}
+            
+            <!-- Demo Bot Section -->
+            {% if template.demo_available %}
+            <div class="demo-bot-section mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="text-white mb-2">
+                            <i class="fas fa-play-circle me-2"></i>Try Live Demo
+                        </h4>
+                        <p class="text-white-50 mb-0">
+                            Test all features with a fully functional demo bot before purchasing.
+                            Demo expires in 24 hours.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-light btn-lg demo-btn" 
+                                data-template-slug="{{ template.slug }}">
+                            <i class="fas fa-robot me-2"></i>Generate Demo
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Description -->
+            <div class="mb-4">
+                <h3>Description</h3>
+                <div class="lead">{{ template.description|linebreaks }}</div>
+            </div>
+            
+            <!-- Features -->
+            {% if template.features %}
+            <div class="mb-4">
+                <h3>Features</h3>
+                <ul class="feature-list">
+                    {% for feature in template.features %}
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        {{ feature }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <!-- Reviews Section -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Reviews</h3>
+                    {% if user.is_authenticated %}
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                        <i class="fas fa-star me-1"></i>Write Review
+                    </button>
+                    {% endif %}
+                </div>
+                
+                {% if reviews %}
+                <div class="row">
+                    {% for review in reviews %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card review-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <strong>{{ review.user.username }}</strong>
+                                    <div class="review-rating">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                            {% else %}
+                                            <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% if review.comment %}
+                                <p class="mb-1">{{ review.comment }}</p>
+                                {% endif %}
+                                <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                    <h5>No reviews yet</h5>
+                    <p class="text-muted">Be the first to review this template!</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Related Templates -->
+            {% if related_templates %}
+            <div class="mb-4">
+                <h3>Related Templates</h3>
+                <div class="row">
+                    {% for related in related_templates %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card template-card h-100 border-0 shadow-sm">
+                            {% if related.thumbnail %}
+                            <img src="{{ related.thumbnail.url }}" class="card-img-top" alt="{{ related.title }}" style="height: 150px; object-fit: cover;">
+                            {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                <i class="fas fa-robot fa-2x text-muted"></i>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="card-body">
+                                <h6 class="card-title">{{ related.title }}</h6>
+                                <p class="card-text small text-muted">{{ related.short_description|truncatewords:10 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-primary">${{ related.price }}</span>
+                                    <a href="{{ related.get_absolute_url }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 20px;">
+                <!-- Purchase Card -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <div class="h2 text-primary mb-2">${{ template.price }}</div>
+                            <p class="text-muted mb-0">One-time purchase</p>
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'orders:create' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="template_id" value="{{ template.id }}">
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3 purchase-btn">
+                                    <i class="fas fa-shopping-cart me-2"></i>Purchase Now
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'users:login' %}?next={{ request.path }}" class="btn btn-primary btn-lg w-100 mb-3">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login to Purchase
+                            </a>
+                        {% endif %}
+                        
+                        {% if template.demo_available %}
+                        <button class="btn btn-outline-primary w-100 demo-btn" 
+                                data-template-slug="{{ template.slug }}">
+                            <i class="fas fa-play me-2"></i>Try Demo First
+                        </button>
+                        {% endif %}
+                        
+                        <hr class="my-4">
+                        
+                        <h6>What's Included:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Complete source code</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Setup instructions</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Configuration files</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Documentation</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Basic support</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Lifetime updates</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Template Info -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6>Template Information</h6>
+                        <hr>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="h5 text-primary">{{ template.download_count }}</div>
+                                <small class="text-muted">Downloads</small>
+                            </div>
+                            <div class="col-6">
+                                <div class="h5 text-primary">{{ template.review_count }}</div>
+                                <small class="text-muted">Reviews</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Category:</span>
+                            <a href="{% url 'templates:category' template.category.slug %}" class="text-decoration-none">
+                                {{ template.category.name }}
+                            </a>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Created:</span>
+                            <span>{{ template.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Updated:</span>
+                            <span>{{ template.updated_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+{% if user.is_authenticated %}
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'templates:review' template.slug %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Write a Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ review_form.rating.id_for_label }}" class="form-label">Rating</label>
+                        {{ review_form.rating }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ review_form.comment.id_for_label }}" class="form-label">Comment (Optional)</label>
+                        {{ review_form.comment }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Demo Modal -->
+<div class="modal fade" id="demoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-robot me-2"></i>Demo Bot Generated
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-4">
+                    <i class="fab fa-telegram-plane fa-4x text-primary mb-3"></i>
+                    <h4>Your demo bot is ready!</h4>
+                    <p class="text-muted">Click the button below to start chatting with your demo bot.</p>
+                </div>
+                
+                <div class="demo-bot-section">
+                    <h5 class="text-white mb-3">Bot Username: @<span id="demoBotUsername"></span></h5>
+                    <a id="telegramLink" href="#" target="_blank" class="btn btn-light btn-lg mb-3">
+                        <i class="fab fa-telegram-plane me-2"></i>Open in Telegram
+                    </a>
+                    <p class="text-white-50 small mb-0">
+                        Demo expires: <span id="demoExpiresAt"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.body.dataset.userAuthenticated = '{{ user.is_authenticated|yesno:"true,false" }}';
+</script>
+{% endblock %}

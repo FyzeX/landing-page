@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Telegram Market Bot{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-4">About Telegram Market Bot</h1>
+                <p class="lead text-muted">Your premier destination for professional Telegram bot templates</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2>Our Mission</h2>
+                <p class="lead">
+                    We believe that creating powerful Telegram bots shouldn't require months of development time. 
+                    Our mission is to provide developers and entrepreneurs with high-quality, ready-to-deploy 
+                    bot templates that accelerate the development process while maintaining professional standards.
+                </p>
+            </div>
+            
+            <div class="row mb-5">
+                <div class="col-md-6">
+                    <h3>What We Offer</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Professional bot templates for every use case
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Complete source code with documentation
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Live demo bots for testing before purchase
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Regular updates and new features
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Expert support and guidance
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3>Why Choose Us</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            Tested by thousands of developers
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            Industry best practices implemented
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            Scalable and maintainable code
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            Comprehensive security measures
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            Lifetime updates included
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="bg-light rounded p-4 mb-5">
+                <h3>Our Story</h3>
+                <p>
+                    Founded by a team of experienced developers who faced the same challenges you do today, 
+                    Telegram Market Bot was born from the frustration of building bots from scratch repeatedly. 
+                    We realized that many developers were solving the same problems over and over again, 
+                    spending valuable time on boilerplate code instead of focusing on unique business logic.
+                </p>
+                <p class="mb-0">
+                    Today, we're proud to serve thousands of developers worldwide, helping them launch 
+                    their bot projects faster and more efficiently than ever before.
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <h3>Ready to Get Started?</h3>
+                <p class="text-muted mb-4">
+                    Join our community of developers and start building amazing bots today.
+                </p>
+                <a href="{% url 'templates:list' %}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-search me-2"></i>Browse Templates
+                </a>
+                <a href="{% url 'core:contact' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

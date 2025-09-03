@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - Telegram Market Bot{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if order %}
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-credit-card me-2"></i>Payment Processing
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Order Summary -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Order Summary</h5>
+                            <div class="d-flex align-items-center mb-3">
+                                {% if order.template.thumbnail %}
+                                <img src="{{ order.template.thumbnail.url }}" 
+                                     class="rounded me-3" 
+                                     style="width: 80px; height: 80px; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="fas fa-robot fa-2x text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-1">{{ order.template.title }}</h6>
+                                    <p class="text-muted mb-1">{{ order.template.category.name }}</p>
+                                    <strong class="text-primary">${{ order.amount }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Order Details</h5>
+                            <table class="table table-borderless table-sm">
+                                <tr>
+                                    <td>Order ID:</td>
+                                    <td class="text-end"><code>{{ order.id }}</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Template:</td>
+                                    <td class="text-end">{{ order.template.title }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Price:</td>
+                                    <td class="text-end">${{ order.amount }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Currency:</td>
+                                    <td class="text-end">{{ order.currency }}</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td>Total:</td>
+                                    <td class="text-end">${{ order.amount }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Methods -->
+                    <h5 class="mb-3">Choose Payment Method</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                        
+                        <div class="row g-3">
+                            <!-- Telegram Payment -->
+                            <div class="col-md-6">
+                                <div class="payment-method-card" data-method="telegram">
+                                    <div class="card h-100 border-2" style="cursor: pointer;">
+                                        <div class="card-body text-center p-4">
+                                            <i class="fab fa-telegram-plane fa-3x text-primary mb-3"></i>
+                                            <h5>Telegram Payments</h5>
+                                            <p class="text-muted small mb-3">
+                                                Pay securely through Telegram's built-in payment system. 
+                                                Supports credit cards and other payment methods.
+                                            </p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="payment_method" 
+                                                       value="telegram" id="telegram" required>
+                                                <label class="form-check-label" for="telegram">
+                                                    Select Telegram Pay
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Crypto Payment -->
+                            <div class="col-md-6">
+                                <div class="payment-method-card" data-method="crypto_btc">
+                                    <div class="card h-100 border-2" style="cursor: pointer;">
+                                        <div class="card-body text-center p-4">
+                                            <i class="fab fa-bitcoin fa-3x text-warning mb-3"></i>
+                                            <h5>Cryptocurrency</h5>
+                                            <p class="text-muted small mb-3">
+                                                Pay with Bitcoin, Ethereum, USDT or other cryptocurrencies. 
+                                                Fast and secure blockchain payments.
+                                            </p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="payment_method" 
+                                                       value="crypto_btc" id="crypto">
+                                                <label class="form-check-label" for="crypto">
+                                                    Select Crypto Pay
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ order.template.get_absolute_url }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Template
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg" id="processPayment" disabled>
+                                <i class="fas fa-lock me-2"></i>Process Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <!-- No Order Found -->
+            <div class="card shadow">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h4>Order Not Found</h4>
+                    <p class="text-muted mb-4">
+                        The order you're trying to pay for could not be found or has already been processed.
+                    </p>
+                    <a href="{% url 'templates:list' %}" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Browse Templates
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.payment-method-card .card {
+    transition: all 0.3s ease;
+}
+
+.payment-method-card .card:hover {
+    border-color: var(--bs-primary) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.payment-method-card .card.selected {
+    border-color: var(--bs-primary) !important;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentMethods = document.querySelectorAll('.payment-method-card');
+    const processButton = document.getElementById('processPayment');
+    
+    paymentMethods.forEach(method => {
+        method.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            const card = this.querySelector('.card');
+            
+            // Remove selected class from all cards
+            paymentMethods.forEach(m => m.querySelector('.card').classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            card.classList.add('selected');
+            
+            // Check the radio button
+            radio.checked = true;
+            
+            // Enable process button
+            processButton.disabled = false;
+        });
+    });
+    
+    // Handle form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
+        if (!selectedMethod) {
+            e.preventDefault();
+            alert('Please select a payment method');
+            return;
+        }
+        
+        // Show loading state
+        processButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        processButton.disabled = true;
+    });
+});
+</script>
+{% endblock %}

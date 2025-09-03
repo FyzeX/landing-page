@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Details - Telegram Market Bot{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Order Header -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-receipt me-2"></i>Order Details
+                    </h4>
+                    <span class="order-status {{ order.status }}">{{ order.get_status_display }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Order Information</h6>
+                            <table class="table table-borderless table-sm">
+                                <tr>
+                                    <td>Order ID:</td>
+                                    <td><code>{{ order.id }}</code></td>
+                                </tr>
+                                <tr>
+                                    <td>Date:</td>
+                                    <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+                                </tr>
+                                {% if order.completed_at %}
+                                <tr>
+                                    <td>Completed:</td>
+                                    <td>{{ order.completed_at|date:"M d, Y H:i" }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td>Status:</td>
+                                    <td><span class="order-status {{ order.status }}">{{ order.get_status_display }}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Payment Information</h6>
+                            <table class="table table-borderless table-sm">
+                                <tr>
+                                    <td>Amount:</td>
+                                    <td><strong>${{ order.amount }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Currency:</td>
+                                    <td>{{ order.currency }}</td>
+                                </tr>
+                                {% if order.payment %}
+                                <tr>
+                                    <td>Payment Method:</td>
+                                    <td>{{ order.payment.get_payment_method_display }}</td>
+                                </tr>
+                                {% if order.payment.transaction_id %}
+                                <tr>
+                                    <td>Transaction ID:</td>
+                                    <td><code>{{ order.payment.transaction_id }}</code></td>
+                                </tr>
+                                {% endif %}
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>Template Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {% if order.template.thumbnail %}
+                            <img src="{{ order.template.thumbnail.url }}" 
+                                 class="img-fluid rounded" 
+                                 alt="{{ order.template.title }}">
+                            {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas fa-robot fa-4x text-muted"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h4>{{ order.template.title }}</h4>
+                            <p class="text-muted mb-3">{{ order.template.category.name }}</p>
+                            <p class="mb-3">{{ order.template.short_description }}</p>
+                            
+                            {% if order.template.features %}
+                            <h6>Features:</h6>
+                            <ul class="list-unstyled">
+                                {% for feature in order.template.features %}
+                                <li class="mb-1">
+                                    <i class="fas fa-check text-success me-2"></i>{{ feature }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            
+                            <a href="{{ order.template.get_absolute_url }}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye me-2"></i>View Template Page
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Order Timeline
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Order Created</h6>
+                                <p class="text-muted mb-0">{{ order.created_at|date:"M d, Y H:i" }}</p>
+                            </div>
+                        </div>
+                        
+                        {% if order.status != 'created' %}
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Payment Initiated</h6>
+                                <p class="text-muted mb-0">Payment process started</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if order.status == 'completed' %}
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Payment Completed</h6>
+                                <p class="text-muted mb-0">{{ order.completed_at|date:"M d, Y H:i" }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Download Available</h6>
+                                <p class="text-muted mb-0">Template ready for download</p>
+                            </div>
+                        </div>
+                        {% elif order.status == 'failed' %}
+                        <div class="timeline-item failed">
+                            <div class="timeline-marker">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6>Payment Failed</h6>
+                                <p class="text-muted mb-0">Payment could not be processed</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 20px;">
+                <!-- Quick Actions -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Quick Actions</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if order.can_download %}
+                        <a href="{% url 'orders:download' order.download_token %}" 
+                           class="btn btn-success w-100 mb-2">
+                            <i class="fas fa-download me-2"></i>Download Template
+                        </a>
+                        <p class="small text-muted text-center mb-3">
+                            Downloads remaining: {{ order.max_downloads|add:order.download_count|add:"-"|add:order.download_count }}
+                        </p>
+                        {% endif %}
+                        
+                        {% if order.status == 'created' or order.status == 'pending' %}
+                        <a href="{% url 'payments:process' %}?order_id={{ order.id }}" 
+                           class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-credit-card me-2"></i>Complete Payment
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'orders:list' %}" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="fas fa-list me-2"></i>All Orders
+                        </a>
+                        
+                        <a href="{% url 'users:dashboard' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Support -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Need Help?</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted mb-3">
+                            Having issues with your order or need assistance with setup?
+                        </p>
+                        <a href="{% url 'core:contact' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-headset me-2"></i>Contact Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: var(--bs-success);
+    border-color: var(--bs-success);
+    color: white;
+}
+
+.timeline-item.failed .timeline-marker {
+    background: var(--bs-danger);
+    border-color: var(--bs-danger);
+    color: white;
+}
+
+.timeline-content h6 {
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Telegram Market Bot - Ready-made Bot Templates{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Ready-made <span class="text-warning">Telegram Bot</span> Templates
+                </h1>
+                <p class="lead mb-4">
+                    Skip the coding hassle and launch your Telegram bot faster with our professional, tested templates. 
+                    From e-commerce to customer support, we have the perfect solution for your needs.
+                </p>
+                <div class="d-flex gap-3 mb-4">
+                    <a href="{% url 'templates:list' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-search me-2"></i>Browse Templates
+                    </a>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'users:register' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="stat-number text-warning">{{ stats.total_templates }}+</div>
+                        <div class="stat-label text-light">Templates</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-number text-warning">{{ stats.total_downloads }}+</div>
+                        <div class="stat-label text-light">Downloads</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-number text-warning">{{ stats.categories_count }}+</div>
+                        <div class="stat-label text-light">Categories</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="position-relative">
+                    <i class="fab fa-telegram-plane" style="font-size: 20rem; color: rgba(255,255,255,0.1);"></i>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <div class="bg-white rounded-circle p-4 shadow-lg">
+                            <i class="fas fa-robot fa-4x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">Why Choose Our Templates?</h2>
+                <p class="lead text-muted">
+                    Professional, tested, and ready-to-deploy Telegram bot templates that save you weeks of development time.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h4>Quick Deployment</h4>
+                    <p class="text-muted">
+                        Get your bot running in minutes, not weeks. Our templates come with detailed setup instructions 
+                        and all necessary configuration files.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Production Ready</h4>
+                    <p class="text-muted">
+                        All templates are thoroughly tested and include best practices for security, 
+                        error handling, and performance optimization.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h4>Easy Customization</h4>
+                    <p class="text-muted">
+                        Clean, well-documented code that's easy to modify and extend. 
+                        Add your own features without breaking the core functionality.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <h4>Live Demo Bots</h4>
+                    <p class="text-muted">
+                        Try before you buy! Generate instant demo bots to test functionality 
+                        and see exactly what you're getting.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h4>Expert Support</h4>
+                    <p class="text-muted">
+                        Get help when you need it. Our team of bot experts is here to assist 
+                        with implementation and customization questions.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h4>Regular Updates</h4>
+                    <p class="text-muted">
+                        Stay current with Telegram API changes. Templates are regularly updated 
+                        with new features and security improvements.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+{% if categories %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">Template Categories</h2>
+                <p class="lead text-muted">
+                    Explore our diverse collection of bot templates designed for various use cases and industries.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        {% if category.icon %}
+                        <i class="{{ category.icon }} fa-3x text-primary mb-3"></i>
+                        {% else %}
+                        <i class="fas fa-folder fa-3x text-primary mb-3"></i>
+                        {% endif %}
+                        <h5 class="card-title">{{ category.name }}</h5>
+                        <p class="card-text text-muted">{{ category.description|truncatewords:20 }}</p>
+                        <a href="{% url 'templates:category' category.slug %}" class="btn btn-outline-primary">
+                            View Templates
+                            <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Templates Section -->
+{% if featured_templates %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">Featured Templates</h2>
+                <p class="lead text-muted">
+                    Our most popular and recently added templates, ready for immediate deployment.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for template in featured_templates %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card template-card h-100 border-0 shadow-sm">
+                    {% if template.thumbnail %}
+                    <img src="{{ template.thumbnail.url }}" class="card-img-top" alt="{{ template.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-robot fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge-category">{{ template.category.name }}</span>
+                            <span class="template-price">${{ template.price }}</span>
+                        </div>
+                        
+                        <h5 class="card-title">{{ template.title }}</h5>
+                        <p class="card-text text-muted flex-grow-1">{{ template.short_description }}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            {% if template.demo_available %}
+                            <button class="btn btn-sm btn-outline-primary demo-btn" 
+                                    data-template-slug="{{ template.slug }}">
+                                <i class="fas fa-play me-1"></i>Demo
+                            </button>
+                            {% else %}
+                            <span class="text-muted small">No demo</span>
+                            {% endif %}
+                            
+                            <a href="{{ template.get_absolute_url }}" class="btn btn-primary btn-sm">
+                                View Details
+                                <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'templates:list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-th-large me-2"></i>View All Templates
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h3 class="mb-3">Ready to Build Your Bot?</h3>
+                <p class="mb-0 lead">
+                    Join thousands of developers who trust our templates for their Telegram bot projects.
+                    Start your bot journey today with our professional templates.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                {% if user.is_authenticated %}
+                <a href="{% url 'templates:list' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-shopping-cart me-2"></i>Browse Templates
+                </a>
+                {% else %}
+                <a href="{% url 'users:register' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Get Started Free
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Demo Modal -->
+<div class="modal fade" id="demoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-robot me-2"></i>Demo Bot Generated
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-4">
+                    <i class="fab fa-telegram-plane fa-4x text-primary mb-3"></i>
+                    <h4>Your demo bot is ready!</h4>
+                    <p class="text-muted">Click the button below to start chatting with your demo bot.</p>
+                </div>
+                
+                <div class="demo-bot-section">
+                    <h5 class="text-white mb-3">Bot Username: @<span id="demoBotUsername"></span></h5>
+                    <a id="telegramLink" href="#" target="_blank" class="btn btn-light btn-lg mb-3">
+                        <i class="fab fa-telegram-plane me-2"></i>Open in Telegram
+                    </a>
+                    <p class="text-white-50 small mb-0">
+                        Demo expires: <span id="demoExpiresAt"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.body.dataset.userAuthenticated = '{{ user.is_authenticated|yesno:"true,false" }}';
+</script>
+{% endblock %}
